@@ -13,7 +13,7 @@ conda activate nameofvenv
 Next we need to download and install all the necessary packages we need 
 In our project we will use PYTORCH and NLTK..
 
-To install PYTORCh go to the site and configure accordingly and copy paste the configured package code 
+To install PYTORCH go to the site and configure accordingly and copy paste the configured package code 
 Wait for a moment it will be downloaded.
 The one that i used
 conda install pytorch torchvision torchaudio cpuonly -c pytorch
