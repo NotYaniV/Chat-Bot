@@ -37,13 +37,13 @@ conda activate nameofvenv
 if venv
 Mac / Linux:
 ```console
-. venv/bin/activate
+venv/bin/activate
 ```
 Windows:
 ```console
 venv\Scripts\activate
 ```
-### Install PyTorch and dependencies
+### Install PyTorch, NLTK and dependencies
 
 Next we need to download and install all the necessary packages we need 
 In our project we will use PYTORCH and NLTK..
@@ -61,7 +61,10 @@ Next, we need to install NLTK
 ```console
 sudo apt install python3-nltk
 ```
-
+### Install Flask
+```console
+pip install flask
+```
 If you get an error during the first run, you also need to install `nltk.tokenize.punkt`:
 Run this once in your terminal:
  ```console
