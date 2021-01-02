@@ -5,55 +5,70 @@ import torch
 from model import NeuralNet
 from nltk_utils import bag_of_words, tokenize
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-with open('intents.json', 'r') as json_data:
-    intents = json.load(json_data)
+class ChatBot():
+    def __init__(self):
+        self.device = torch.device(
+            'cuda' if torch.cuda.is_available() else 'cpu')
 
-FILE = "data.pth"
-data = torch.load(FILE)
+        with open('intents.json', 'r') as json_data:
+            self.intents = json.load(json_data)
 
-input_size = data["input_size"]
-hidden_size = data["hidden_size"]
-output_size = data["output_size"]
-all_words = data['all_words']
-tags = data['tags']
-model_state = data["model_state"]
+        FILE = "data.pth"
+        data = torch.load(FILE)
 
-model = NeuralNet(input_size, hidden_size, output_size).to(device)
-model.load_state_dict(model_state)
-model.eval()
+        input_size = data["input_size"]
+        hidden_size = data["hidden_size"]
+        output_size = data["output_size"]
 
-option = input("Hey, Do you want to name your bot?(Y/N)\n")
-if (option.lower() == 'yes' or option.lower() == 'y'):
-    name = input("Enter Bot name\n")
+        self.all_words = data['all_words']
+        self.tags = data['tags']
 
-if (option.lower() == 'no' or option.lower() == 'n'):
-    name = 'Sam'
-    
-bot_name = name
-print("Let's chat! (type 'quit' to exit)")
-while True:
-    # sentence = "do you use credit cards?"
-    sentence = input("You: ")
-    if sentence == "quit":
-        break
+        model_state = data["model_state"]
 
-    sentence = tokenize(sentence)
-    X = bag_of_words(sentence, all_words)
-    X = X.reshape(1, X.shape[0])
-    X = torch.from_numpy(X).to(device)
+        self.model = NeuralNet(input_size, hidden_size,
+                               output_size).to(self.device)
+        self.model.load_state_dict(model_state)
+        self.model.eval()
 
-    output = model(X)
-    _, predicted = torch.max(output, dim=1)
+        ''' 
+        option = input("Hey, Do you want to name your bot?(Y/N)\n")
+        if (option.lower() == 'yes' or option.lower() == 'y'):
+            name = input("Enter Bot name\n")
 
-    tag = tags[predicted.item()]
+        if (option.lower() == 'no' or option.lower() == 'n'):
+            name = 'Sam'
+        '''
 
-    probs = torch.softmax(output, dim=1)
-    prob = probs[0][predicted.item()]
-    if prob.item() > 0.75:
-        for intent in intents['intents']:
-            if tag == intent["tag"]:
-                print(f"{bot_name}: {random.choice(intent['responses'])}")
-    else:
-        print(f"{bot_name}: I do not understand...")
+        print("Let's chat! (type 'quit' to exit)")
+
+    def get_response(self, sentence):
+        # print(sentence)
+        sentence = tokenize(sentence)
+        X = bag_of_words(sentence, self.all_words)
+        X = X.reshape(1, X.shape[0])
+        X = torch.from_numpy(X).to(self.device)
+
+        output = self.model(X)
+        _, predicted = torch.max(output, dim=1)
+
+        tag = self.tags[predicted.item()]
+
+        probs = torch.softmax(output, dim=1)
+        prob = probs[0][predicted.item()]
+        if prob.item() > 0.75:
+            for intent in self.intents['intents']:
+                if tag == intent["tag"]:
+                    return (f"{random.choice(intent['responses'])}")
+        else:
+            return (f"Sorry, can't understand you, Please give me more info")
+
+
+''' 
+bot = ChatBot()
+a = 0
+while a != 1:
+    s = input("input  ")
+
+    print(bot.get_response(s))
+ '''
